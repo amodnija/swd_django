@@ -154,6 +154,8 @@ def gate_security(request):
             except VacationDatesFill.DoesNotExist:
                 vacationdates = None
 
+            late = False
+
             if inout:
                 #We have an existing inout object created of the student
                 if inout.inCampus == True:
@@ -207,13 +209,14 @@ def gate_security(request):
                     if inout.onVacation == True:
                         inout.onVacation =False
                     inout.save()
-                    # dt_2 = datetime(2022, 6, 27, 22, 30, 00)
-                    # if inout.inDateTime.time() > dt_2.time():
-                    #     la = LateComer(
-                    #         student=student,
-                    #         datetime = inout.inDateTime
-                    #     )
-                    #     la.save()
+                    dt_2 = datetime(2022, 6, 27, 17, 30, 00)
+                    if inout.inDateTime.time() > dt_2.time():
+                        late = True
+                        la = LateComer(
+                            student=student,
+                            dateTime = inout.inDateTime
+                        )
+                        la.save()
                         
             else:
                 #Creating an inout object of the student in case it was not existing
@@ -270,14 +273,16 @@ def gate_security(request):
                     if inout.onVacation == True:
                         inout.onVacation = False
                     inout.save()
-                    # dt_2 = datetime(2022, 6, 27, 22, 30, 00)
-                    # if inout.inDateTime.time() > dt_2.time():
-                    #     la = LateComer(
-                    #         student=student,
-                    #         datetime = inout.inDateTime
-                    #     )
-                    #     la.save()
+                    dt_2 = datetime(2022, 6, 27, 17, 30, 00)
+                    if inout.inDateTime.time() > dt_2.time():
+                        late = True
+                        la = LateComer(
+                            student=student,
+                            dateTime = inout.inDateTime
+                        )
+                        la.save()
             context = {
+                'late' : late,
                 'student': student,
                 'inout': inout,
                 'success': True,

@@ -187,9 +187,17 @@
 						</div>
 					</div>
 
+
 					<div class="col s10 push-s4 center-align">
 						<table>
 							<tbody>
+								<tr>
+									{% if late %}
+										<div class="center-align">
+											<span style="color: red;font-weight: bold;">Student entered late, latecomer recorded</span>
+										</div>
+									{% endif %}
+								</tr>
 								<tr>
 									<td>Place</td>
 									<td>{{ inout.place }}</td>
