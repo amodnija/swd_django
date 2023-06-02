@@ -63,6 +63,32 @@
 							</div>
 						</div>
 
+						<p style="padding-top: 3cm;"> Student's History: <br>
+						<table width="60%" style="border: 1px solid black;">
+							<tr style="border: 1px solid black;">
+								<th style="text-align: center;border: 1px solid black;"> Action </th>
+								<th style="text-align: center;border: 1px solid black;"> Date </th>
+								<th style="text-align: center;border: 1px solid black;"> Time </th>
+							</tr>
+							{% for io in last5 %}
+								<tr style="border: 1px solid black;">
+									{% if io.inCampus%}
+										<td id="contact1" style="text-align:center;vertical-align: middle;width: 70px;border: 1px solid black;"> In </td>
+										<td id="contact1" style="text-align:center;vertical-align: middle;width: 70px;border: 1px solid black;"> {{ io.inDateTime|date:"d/m/Y" }} </td>
+										<td id="contact1" style="text-align:center;vertical-align: middle;width: 70px;border: 1px solid black;"> {{ io.inDateTime|date:"h:m:s" }} </td>
+									{% endif %}
+								</tr>
+								<tr style="border: 1px solid black;">
+									{% if not io.inCampus%}
+										<td id="contact1" style="text-align:center;vertical-align: middle;width: 70px;border: 1px solid black;"> Out </td>
+										<td id="contact1" style="text-align:center;vertical-align: middle;width: 70px;border: 1px solid black;"> {{ io.outDateTime|date:"d/m/Y" }} </td>
+										<td id="contact1" style="text-align:center;vertical-align: middle;width: 70px;border: 1px solid black;"> {{ io.outDateTime|date:"h:m:s" }} </td>
+									{% endif %}
+								</tr>
+							{% endfor %}
+						</table><br />
+						</p>
+
 						{% if inout.inCampus and inout %}
 						<div class="col s10 push-s2 input-field" id="place">
 							<input

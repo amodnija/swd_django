@@ -30,10 +30,13 @@ def gate_security(request):
                 student = None
                 errors.append("Please enter correct BITS ID")
 
+            f=0
             try:
                 try:
+                    f=1
                     inout = InOut.objects.get(student__bitsId=username)
-                except (IndexError, MultipleObjectsReturned):    
+                except (IndexError, MultipleObjectsReturned):  
+                    f=2
                     inout = InOut.objects.filter(student__bitsId=username).order_by('-id')[0]
             except InOut.DoesNotExist:
                 inout = None
@@ -84,7 +87,19 @@ def gate_security(request):
                 vacationdates = None
             print(vacationdates)
 
+            last5 = []
+            if f>0:
+                if f==1:
+                    last5.append(inout)
+                else:
+                    for io in InOut.objects.filter(student__bitsId=username).order_by('-id'):
+                        if len(last5)<5:
+                            last5.append(io)
+
+            print(last5)
+
             context = {
+                'last5' : last5,
                 'student': student,
                 'leave': leave,
                 'daypass': daypass,
@@ -175,10 +190,10 @@ def gate_security(request):
                             place=inout.place,
                             inDateTime=inout.inDateTime,
                             outDateTime=inout.outDateTime,
-                            inCampus=False,
-                            onLeave=False,
-                            onDaypass=False,
-                            onVacation=False
+                            inCampus=inout.inCampus,
+                            onLeave=inout.onLeave,
+                            onDaypass=inout.onDaypass,
+                            onVacation=inout.onVacation
                     )
                     inout2.save()
                     inout.save()
@@ -231,10 +246,10 @@ def gate_security(request):
                             place=inout.place,
                             inDateTime=inout.inDateTime,
                             outDateTime=inout.outDateTime,
-                            inCampus=True,
-                            onLeave=False,
-                            onDaypass=False,
-                            onVacation=False
+                            inCampus=inout.inCampus,                            
+                            onLeave=inout.onLeave,
+                            onDaypass=inout.onDaypass,
+                            onVacation=inout.onVacation
                     )
                     inout2.save()
                     inout.save()
@@ -345,9 +360,16 @@ def in_out(request):
         inout = InOut.objects.filter(inCampus = False, onLeave = False, onDaypass = False).order_by('-outDateTime')
 
         ioreal = []
+        students = []
+
         for io in inout:
-            if HostelPS.objects.get(student = io.student).hostel:
-                ioreal.append(io)
+            if HostelPS.objects.get(student = io.student).hostel and InOut.objects.filter(student=io.student).order_by('-id')[0].inCampus==False:
+                if io.student not in students:
+                    students.append(io.student)
+                    ioreal.append(io)
+                else:
+                    if ioreal[students.index(io.student)].outDateTime < io.outDateTime:
+                        ioreal[students.index(io.student)] = io
         context = {
             'inout': ioreal,
         }
