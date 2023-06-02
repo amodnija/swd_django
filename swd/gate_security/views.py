@@ -31,7 +31,10 @@ def gate_security(request):
                 errors.append("Please enter correct BITS ID")
 
             try:
-                inout = InOut.objects.get(student__bitsId=username)
+                try:
+                    inout = InOut.objects.get(student__bitsId=username)
+                except (IndexError, MultipleObjectsReturned):    
+                    inout = InOut.objects.filter(student__bitsId=username).order_by('-id')[0]
             except InOut.DoesNotExist:
                 inout = None
 
@@ -104,7 +107,10 @@ def gate_security(request):
             vacation_check = request.POST.get('vacation_check')
 
             try:
-                inout = InOut.objects.get(student__bitsId=username)
+                try:
+                    inout = InOut.objects.get(student__bitsId=username)
+                except (IndexError, MultipleObjectsReturned):    
+                    inout = InOut.objects.filter(student__bitsId=username).order_by('-id')[0]
             except InOut.DoesNotExist:
                 inout = None
 
@@ -164,6 +170,17 @@ def gate_security(request):
                     inout.inCampus = False
                     inout.outDateTime = datetime.now()
                     inout.inDateTime = inout.inDateTime
+                    inout2 = InOut(
+                            student=student,
+                            place=inout.place,
+                            inDateTime=inout.inDateTime,
+                            outDateTime=inout.outDateTime,
+                            inCampus=False,
+                            onLeave=False,
+                            onDaypass=False,
+                            onVacation=False
+                    )
+                    inout2.save()
                     inout.save()
 
                     if leave_check:
@@ -208,8 +225,20 @@ def gate_security(request):
                         inout.save()
                     if inout.onVacation == True:
                         inout.onVacation =False
+                    
+                    inout2 = InOut(
+                            student=student,
+                            place=inout.place,
+                            inDateTime=inout.inDateTime,
+                            outDateTime=inout.outDateTime,
+                            inCampus=True,
+                            onLeave=False,
+                            onDaypass=False,
+                            onVacation=False
+                    )
+                    inout2.save()
                     inout.save()
-                    dt_2 = datetime(2022, 6, 27, 17, 30, 00)
+                    dt_2 = datetime(2022, 6, 27, 22, 30, 00)
                     if inout.inDateTime.time() > dt_2.time():
                         late = True
                         la = LateComer(
@@ -273,7 +302,7 @@ def gate_security(request):
                     if inout.onVacation == True:
                         inout.onVacation = False
                     inout.save()
-                    dt_2 = datetime(2022, 6, 27, 17, 30, 00)
+                    dt_2 = datetime(2022, 6, 27, 22, 30, 00)
                     if inout.inDateTime.time() > dt_2.time():
                         late = True
                         la = LateComer(

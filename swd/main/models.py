@@ -392,7 +392,6 @@ class LateComer(models.Model):
     def __str__(self):
         return self.student.bitsId + ' (' + self.student.name + ')'
 
-
 class Disco(models.Model):
     student = models.ForeignKey('Student', on_delete=models.CASCADE)
     dateOfViolation = models.DateField(blank=True, null=True)
